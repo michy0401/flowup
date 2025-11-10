@@ -1,21 +1,24 @@
 // lib/features/home/presentation/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flowup/core/theme/app_colors.dart'; // Para los colores de las tarjetas
-import 'package:flowup/core/widgets/app_drawer.dart'; // Importa el Drawer global
-import '../widgets/summary_card.dart'; // Importa el widget de la tarjeta
-import '../widgets/transaction_list_tile.dart'; // Importa el widget de la lista
+import 'package:flowup/core/theme/app_colors.dart';
+import 'package:flowup/core/widgets/app_drawer.dart';
+import 'package:intl/intl.dart';
+import '../widgets/summary_card.dart';
+import '../widgets/transaction_list_tile.dart';
+import '../providers/dashboard_providers.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
     final theme = Theme.of(context);
+    final dashboardSummaryAsync = ref.watch(dashboardSummaryProvider);
 
     return Scaffold(
-      // 1. El AppBar con el título y el botón de menú
       appBar: AppBar(
         title: Text(
           'HOME',
@@ -24,35 +27,89 @@ class HomeScreen extends StatelessWidget {
             fontSize: 32,
           ),
         ),
-        // El color del ícono del menú se hereda automáticamente
-        backgroundColor: Colors.transparent, 
+        backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      // 2. El Drawer (menú lateral)
-      drawer: const AppDrawer(), // Usa el Drawer importado
-      // 3. El body, en un ListView para que sea scrollable
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        children: [
-          // --- Cuadrícula de Resumen ---
-          _buildSummaryGrid(context),
-
-          const SizedBox(height: 24),
-
-          // --- Lista de Transacciones ---
-          Text(
-            'TRANSACCIONES RECIENTES',
-            style: textTheme.labelMedium,
+      drawer: const AppDrawer(),
+      body: dashboardSummaryAsync.when(
+        data: (summary) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(dashboardSummaryProvider);
+            },
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              children: [
+                _buildSummaryGrid(
+                  context,
+                  income: summary.income,
+                  expenses: summary.expenses,
+                  balance: summary.balance,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'TRANSACCIONES RECIENTES',
+                  style: textTheme.labelMedium,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Próximamente verás tus transacciones recientes aquí',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                'Error al cargar datos',
+                style: textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: textTheme.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  ref.invalidate(dashboardSummaryProvider);
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('Reintentar'),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          _buildRecentTransactions(),
-        ],
+        ),
       ),
     );
   }
 
-  // Helper para la cuadrícula 2x2
-  Widget _buildSummaryGrid(BuildContext context) {
+  Widget _buildSummaryGrid(
+    BuildContext context, {
+    required String income,
+    required String expenses,
+    required String balance,
+  }) {
+    final formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+
+    // Parse amounts
+    final incomeAmount = double.tryParse(income) ?? 0.0;
+    final expensesAmount = double.tryParse(expenses) ?? 0.0;
+    final balanceAmount = double.tryParse(balance) ?? 0.0;
+
+    // Format amounts
+    final formattedIncome = formatter.format(incomeAmount);
+    final formattedExpenses = formatter.format(expensesAmount);
+    final formattedBalance = formatter.format(balanceAmount);
+
     return Column(
       children: [
         Row(
@@ -60,8 +117,8 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: SummaryCard(
                 title: 'INGRESOS',
-                amount: '\$1,500.00',
-                color: AppColors.greenSuccess, // Color de nuestra paleta
+                amount: formattedIncome,
+                color: AppColors.greenSuccess,
                 onTap: () => context.push('/income'),
               ),
             ),
@@ -69,8 +126,8 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: SummaryCard(
                 title: 'GASTOS',
-                amount: '\$850.00',
-                color: AppColors.redError, // Color de nuestra paleta
+                amount: formattedExpenses,
+                color: AppColors.redError,
                 onTap: () => context.push('/expenses'),
               ),
             ),
@@ -81,55 +138,21 @@ class HomeScreen extends StatelessWidget {
           children: [
             Expanded(
               child: SummaryCard(
-                title: 'AHORROS',
-                amount: '\$500.00',
-                onTap: () => context.push('/savings'),
+                title: 'BALANCE',
+                amount: formattedBalance,
+                color: balanceAmount >= 0 ? AppColors.greenSuccess : AppColors.redError,
+                onTap: () {},
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: SummaryCard(
                 title: 'INVERSIÓN',
-                amount: '\$1,200.00',
+                amount: '\$0.00',
                 onTap: () => context.push('/investments'),
               ),
             ),
           ],
-        ),
-      ],
-    );
-  }
-
-  // Helper para la lista de transacciones (con datos de prueba)
-  Widget _buildRecentTransactions() {
-    return Column(
-      children: const [
-        TransactionListTile(
-          title: 'Compra en Supermercado',
-          category: 'Comida',
-          date: '08 Nov', // (Los datos son de prueba)
-          amount: '120.00',
-          isExpense: true,
-        ),
-        TransactionListTile(
-          title: 'Pago de Salario',
-          category: 'Ingreso',
-          date: '07 Nov',
-          amount: '1,500.00',
-        ),
-        TransactionListTile(
-          title: 'Restaurante',
-          category: 'Ocio',
-          date: '07 Nov',
-          amount: '45.00',
-          isExpense: true,
-        ),
-        TransactionListTile(
-          title: 'Gasolina',
-          category: 'Transporte',
-          date: '06 Nov',
-          amount: '50.00',
-          isExpense: true,
         ),
       ],
     );

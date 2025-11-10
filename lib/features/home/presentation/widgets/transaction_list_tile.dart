@@ -1,13 +1,14 @@
 // lib/features/home/presentation/widgets/transaction_list_tile.dart
 import 'package:flutter/material.dart';
-import 'package:flowup/core/theme/app_colors.dart'; // Importamos nuestros colores
+import 'package:flowup/core/theme/app_colors.dart';
+import 'package:go_router/go_router.dart'; // <-- 1. AÑADE IMPORTACIÓN
 
 class TransactionListTile extends StatelessWidget {
   final String title;
   final String category;
   final String date;
   final String amount;
-  final bool isExpense; // Para colorear el monto
+  final bool isExpense;
 
   const TransactionListTile({
     super.key,
@@ -42,8 +43,18 @@ class TransactionListTile extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        // --- 2. ACTUALIZA EL ONTAP ---
         onTap: () {
-          // Navegar al detalle de la transacción
+          // (Usamos un ID de prueba por ahora)
+          // Cuando tengamos datos reales, usaremos el ID de la transacción
+          final fakeTransactionId = '123'; 
+
+          if (isExpense) {
+            // context.push('/expenses/$fakeTransactionId');
+          } else {
+            // Navega a la pantalla de detalle de ingreso
+            context.push('/income/$fakeTransactionId');
+          }
         },
       ),
     );

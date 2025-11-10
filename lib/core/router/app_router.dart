@@ -6,13 +6,15 @@ import '../../features/onboarding/presentation/screens/login_screen.dart';
 import '../../features/onboarding/presentation/screens/register_screen.dart';
 import '../../features/home/presentation/screens/home_screen.dart';
 
-// --- 1. IMPORTAR NUEVAS PANTALLAS ---
+// --- IMPORTAR PANTALLAS ---
 import '../../features/transactions/presentation/screens/income_screen.dart';
 import '../../features/transactions/presentation/screens/expenses_screen.dart';
 import '../../features/transactions/presentation/screens/savings_screen.dart';
 import '../../features/transactions/presentation/screens/investments_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/categories/presentation/screens/categories_screen.dart';
+import '../../features/transactions/presentation/screens/new_income_screen.dart';
+import '../../features/transactions/presentation/screens/income_detail_screen.dart';
 
 
 class AppRouter {
@@ -35,7 +37,7 @@ class AppRouter {
         builder: (context, state) => const RegisterScreen(),
       ),
       
-      // --- 2. AÑADIR NUEVAS RUTAS ---
+      // --- RUTAS DE LA APP ---
       GoRoute(
         path: '/home',
         name: 'home',
@@ -45,6 +47,28 @@ class AppRouter {
         path: '/income',
         name: 'income',
         builder: (context, state) => const IncomeScreen(),
+        routes: [
+          // --- MODIFICA ESTE BUILDER ---
+          GoRoute(
+            path: 'new',
+            name: 'new-income',
+            builder: (context, state) {
+              // 1. Extraemos los datos pasados por 'extra'
+              final transaction = state.extra as Map<String, dynamic>?;
+              // 2. Los pasamos al constructor de la pantalla
+              return NewIncomeScreen(transactionToEdit: transaction);
+            },
+          ),
+          // -----------------------------
+          GoRoute(
+            path: ':id',
+            name: 'income-detail',
+            builder: (context, state) {
+              final id = state.pathParameters['id'] ?? 'error';
+              return IncomeDetailScreen(transactionId: id);
+            },
+          ),
+        ],
       ),
       GoRoute(
         path: '/expenses',
@@ -61,8 +85,6 @@ class AppRouter {
         name: 'investments',
         builder: (context, state) => const InvestmentsScreen(),
       ),
-      
-      // --- 2. AÑADIR NUEVAS RUTAS ---
       GoRoute(
         path: '/profile',
         name: 'profile',
@@ -73,8 +95,6 @@ class AppRouter {
         name: 'categories',
         builder: (context, state) => const CategoriesScreen(),
       ),
-      // ----------------------------
-
     ],
     errorBuilder: (context, state) => Scaffold(
       appBar: AppBar(title: const Text('Error')),

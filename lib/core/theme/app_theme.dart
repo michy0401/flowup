@@ -9,17 +9,31 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.lightBg,
     primaryColor: AppColors.lightPrimary,
     colorScheme: const ColorScheme.light(
-      // ... (tu configuración de colorScheme)
+      primary: AppColors.lightPrimary,
+      onPrimary: AppColors.lightOnPrimary,
+      secondary: AppColors.lightSecondary,
+      surface: AppColors.lightSurface,
+      onSurface: AppColors.lightOnSurface,
+      background: AppColors.lightBg,
+      onBackground: AppColors.lightOnBg,
+      error: AppColors.lightError,
+      onError: Colors.white,
+      brightness: Brightness.light,
     ),
     textTheme: _textTheme(baseColor: AppColors.lightOnBg),
     cardTheme: CardThemeData(
-      // ... (tu configuración de cardTheme)
+      elevation: 0,
+      color: AppColors.lightSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
     ),
+    // --- CÓDIGO RESTAURADO ---
     elevatedButtonTheme: _elevatedButtonTheme(
-      // ... (tu configuración de elevatedButtonTheme)
+      buttonColor: AppColors.lightPrimary,
+      textColor: AppColors.lightOnPrimary,
     ),
-
-    // --- AÑADE ESTE BLOQUE ---
+    // -------------------------
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.black.withOpacity(0.05), // Gris claro
@@ -30,7 +44,18 @@ class AppTheme {
       ),
       labelStyle: const TextStyle(color: AppColors.black, fontWeight: FontWeight.bold),
     ),
-    // -------------------------
+    chipTheme: ChipThemeData(
+      backgroundColor: AppColors.lightBg, // Fondo normal
+      selectedColor: AppColors.lightPrimary, // Color primario al seleccionar
+      labelStyle: const TextStyle(color: AppColors.black),
+      secondaryLabelStyle: const TextStyle(color: AppColors.lightOnPrimary),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Colors.grey),
+      ),
+      // selectedColorOpacity: 1, // <-- LÍNEA ELIMINADA
+    ),
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -38,17 +63,31 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.darkBg,
     primaryColor: AppColors.darkPrimary,
     colorScheme: const ColorScheme.dark(
-      // ... (tu configuración de colorScheme)
+      primary: AppColors.darkPrimary,
+      onPrimary: AppColors.darkOnPrimary,
+      secondary: AppColors.darkSecondary,
+      surface: AppColors.darkSurface,
+      onSurface: AppColors.darkOnSurface,
+      background: AppColors.darkBg,
+      onBackground: AppColors.darkOnBg,
+      error: AppColors.darkError,
+      onError: Colors.white,
+      brightness: Brightness.dark,
     ),
     textTheme: _textTheme(baseColor: AppColors.darkOnBg),
     cardTheme: CardThemeData(
-      // ... (tu configuración de cardTheme)
+      elevation: 0,
+      color: AppColors.darkSurface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
     ),
+    // --- CÓDIGO RESTAURADO ---
     elevatedButtonTheme: _elevatedButtonTheme(
-      // ... (tu configuración de elevatedButtonTheme)
+      buttonColor: AppColors.darkPrimary,
+      textColor: AppColors.darkOnPrimary,
     ),
-
-    // --- AÑADE ESTE BLOQUE ---
+    // -------------------------
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: Colors.white.withOpacity(0.1), // Gris oscuro sutil
@@ -59,30 +98,44 @@ class AppTheme {
       ),
       labelStyle: const TextStyle(color: AppColors.lightBackground, fontWeight: FontWeight.bold),
     ),
-    // -------------------------
+    chipTheme: ChipThemeData(
+      backgroundColor: AppColors.darkSurface, // Fondo normal
+      selectedColor: AppColors.darkPrimary, // Color primario al seleccionar
+      labelStyle: const TextStyle(color: AppColors.lightBackground),
+      secondaryLabelStyle: const TextStyle(color: AppColors.lightOnPrimary),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Colors.grey),
+      ),
+      // selectedColorOpacity: 1, // <-- LÍNEA ELIMINADA
+    ),
   );
 
-  // ... (El resto de tu archivo _elevatedButtonTheme y _textTheme)
-  // --- BUTTONS THEME ---
-  static ElevatedButtonThemeData _elevatedButtonTheme() {
+  // --- WIDGETS THEME (FUNCIÓN CORREGIDA) ---
+  static ElevatedButtonThemeData _elevatedButtonTheme({
+    required Color buttonColor,
+    required Color textColor,
+  }) {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
+        backgroundColor: buttonColor, // <-- Corregido
+        foregroundColor: textColor, // <-- Corregido
         elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        textStyle: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        textStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       ),
     );
   }
   
   // --- TEXT THEME (CORREGIDO) ---
   static TextTheme _textTheme({required Color baseColor}) {
-  // ... (código existente)
     final baseTextTheme = const TextTheme().apply(
       bodyColor: baseColor,
       displayColor: baseColor,
@@ -105,14 +158,12 @@ class AppTheme {
         fontSize: 12,
         color: baseColor.withOpacity(0.7),
       ),
-      // --- AÑADE ESTE NUEVO ESTILO PARA "EMAIL" Y "PASSWORD" ---
       labelMedium: TextStyle(
         fontSize: 14,
         color: baseColor.withOpacity(0.6),
         fontWeight: FontWeight.w600,
         letterSpacing: 0.5,
       ),
-      // --------------------------------------------------------
     );
   }
 }

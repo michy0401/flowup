@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../main.dart'; // <-- Importamos main.dart para acceder al provider
+import '../../main.dart'; // Importamos main.dart para acceder al provider
 
 class AppDrawer extends ConsumerWidget {
   const AppDrawer({super.key});
@@ -32,7 +32,15 @@ class AppDrawer extends ConsumerWidget {
             ),
           ),
 
-          // 2. Enlaces de Navegación
+          // --- 2. ENLACE A HOME (AÑADIDO) ---
+          ListTile(
+            leading: const Icon(Icons.home_outlined),
+            title: const Text('Home'),
+            onTap: () => context.go('/home'),
+          ),
+          // ---------------------------------
+
+          // 3. Enlaces de Navegación
           ListTile(
             leading: const Icon(Icons.arrow_upward),
             title: const Text('Ingresos'),
@@ -61,14 +69,14 @@ class AppDrawer extends ConsumerWidget {
 
           const Divider(height: 32),
 
-          // 3. Sección de Perfil
+          // 4. Sección de Perfil
           ListTile(
             leading: const Icon(Icons.person_outline),
             title: const Text('Perfil'),
             onTap: () => context.go('/profile'),
           ),
 
-          // 4. Toggle de Tema (La funcionalidad clave)
+          // 5. Toggle de Tema
           SwitchListTile(
             title: Text(isDarkMode ? 'Modo Oscuro' : 'Modo Claro'),
             secondary: Icon(

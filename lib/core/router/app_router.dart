@@ -3,16 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 // --- Importaciones de Pantallas ---
-
-// Onboarding (Basado en tu estructura de archivos)
 import '../../features/onboarding/presentation/screens/welcome_screen.dart';
 import '../../features/onboarding/presentation/screens/login_screen.dart';
 import '../../features/onboarding/presentation/screens/register_screen.dart';
-
-// Home
 import '../../features/home/presentation/screens/home_screen.dart';
-
-// Transacciones
 import '../../features/transactions/presentation/screens/income_screen.dart';
 import '../../features/transactions/presentation/screens/new_income_screen.dart';
 import '../../features/transactions/presentation/screens/income_detail_screen.dart';
@@ -20,11 +14,12 @@ import '../../features/transactions/presentation/screens/expenses_screen.dart';
 import '../../features/transactions/presentation/screens/new_expense_screen.dart';
 import '../../features/transactions/presentation/screens/expense_detail_screen.dart';
 import '../../features/transactions/presentation/screens/savings_screen.dart';
-import '../../features/transactions/presentation/screens/investments_screen.dart';
 import '../../features/transactions/presentation/screens/new_saving_goal_screen.dart';
 import '../../features/transactions/presentation/screens/saving_goal_detail_screen.dart';
-
-// App Features
+import '../../features/transactions/presentation/screens/investments_screen.dart';
+import '../../features/transactions/presentation/screens/new_investment_screen.dart';
+import '../../features/transactions/presentation/screens/investment_detail_screen.dart';
+import '../../features/transactions/presentation/screens/investment_portfolio_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/categories/presentation/screens/categories_screen.dart';
 
@@ -50,8 +45,6 @@ class AppRouter {
         name: 'register',
         builder: (context, state) => const RegisterScreen(),
       ),
-      
-      // --- Rutas de la App (Dashboard) ---
       GoRoute(
         path: '/home',
         name: 'home',
@@ -89,18 +82,14 @@ class AppRouter {
         name: 'expenses',
         builder: (context, state) => const ExpensesScreen(),
         routes: [
-          // --- ESTE ES EL BUILDER MODIFICADO ---
           GoRoute(
             path: 'new',
             name: 'new-expense',
             builder: (context, state) {
-              // 1. Extraemos los datos para "Editar"
               final transaction = state.extra as Map<String, dynamic>?;
-              // 2. Los pasamos al constructor
               return NewExpenseScreen(transactionToEdit: transaction);
             },
           ),
-          // ------------------------------------
           GoRoute(
             path: ':id',
             name: 'expense-detail',
@@ -112,23 +101,20 @@ class AppRouter {
         ],
       ),
 
-      // --- Otras rutas principales ---
+      // --- Flujo de Ahorros ---
       GoRoute(
         path: '/savings',
         name: 'savings',
         builder: (context, state) => const SavingsScreen(),
         routes: [
-          // --- MODIFICA ESTE BUILDER ---
           GoRoute(
             path: 'new',
             name: 'new-saving-goal',
             builder: (context, state) {
-              // Permite pasar datos para "Editar"
               final goal = state.extra as Map<String, dynamic>?;
               return NewSavingGoalScreen(goalToEdit: goal);
             },
           ),
-          // -----------------------------
           GoRoute(
             path: ':id',
             name: 'saving-goal-detail',
@@ -140,11 +126,41 @@ class AppRouter {
         ],
       ),
 
+      // --- Flujo de Inversiones ---
       GoRoute(
         path: '/investments',
         name: 'investments',
         builder: (context, state) => const InvestmentsScreen(),
+        routes: [
+          // --- ESTE ES EL BUILDER MODIFICADO ---
+          GoRoute(
+            path: 'new', // Se accederá como /investments/new
+            name: 'new-investment',
+            builder: (context, state) {
+              // 1. Permite pasar datos para "Editar"
+              final investment = state.extra as Map<String, dynamic>?;
+              // 2. Los pasamos al constructor
+              return NewInvestmentScreen(investmentToEdit: investment);
+            },
+          ),
+          // ------------------------------------
+          GoRoute(
+            path: ':id', // Se accederá como /investments/123
+            name: 'investment-detail',
+            builder: (context, state) {
+              final id = state.pathParameters['id'] ?? 'error';
+              return InvestmentDetailScreen(investmentId: id);
+            },
+          ),
+        ],
       ),
+      GoRoute(
+        path: '/portfolio',
+        name: 'portfolio',
+        builder: (context, state) => const InvestmentPortfolioScreen(),
+      ),
+
+      // --- Otras rutas principales ---
       GoRoute(
         path: '/profile',
         name: 'profile',

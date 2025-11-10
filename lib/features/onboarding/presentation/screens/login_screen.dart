@@ -100,7 +100,7 @@ class __LoginFormState extends State<_LoginForm> {
     // Aquí iría la lógica de Riverpod (ej. ref.read(authProvider.notifier).login())
     if (_formKey.currentState!.validate()) {
       print('Login Válido');
-      // context.go('/home'); // Navegaría a home al loguearse
+      context.go('/home'); // Navegaría a home al loguearse
     }
   }
 

@@ -137,7 +137,7 @@ class __RegisterFormState extends State<_RegisterForm> {
       // final name = _nameController.text;
       // final email = _emailController.text;
       // ...etc.
-      // context.go('/home'); // Navegaría a home al registrarse
+      context.go('/home'); // Navegaría a home al registrarse
     }
   }
 

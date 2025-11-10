@@ -21,6 +21,8 @@ import '../../features/transactions/presentation/screens/new_expense_screen.dart
 import '../../features/transactions/presentation/screens/expense_detail_screen.dart';
 import '../../features/transactions/presentation/screens/savings_screen.dart';
 import '../../features/transactions/presentation/screens/investments_screen.dart';
+import '../../features/transactions/presentation/screens/new_saving_goal_screen.dart';
+import '../../features/transactions/presentation/screens/saving_goal_detail_screen.dart';
 
 // App Features
 import '../../features/profile/presentation/screens/profile_screen.dart';
@@ -115,7 +117,29 @@ class AppRouter {
         path: '/savings',
         name: 'savings',
         builder: (context, state) => const SavingsScreen(),
+        routes: [
+          // --- MODIFICA ESTE BUILDER ---
+          GoRoute(
+            path: 'new',
+            name: 'new-saving-goal',
+            builder: (context, state) {
+              // Permite pasar datos para "Editar"
+              final goal = state.extra as Map<String, dynamic>?;
+              return NewSavingGoalScreen(goalToEdit: goal);
+            },
+          ),
+          // -----------------------------
+          GoRoute(
+            path: ':id',
+            name: 'saving-goal-detail',
+            builder: (context, state) {
+              final id = state.pathParameters['id'] ?? 'error';
+              return SavingGoalDetailScreen(goalId: id);
+            },
+          ),
+        ],
       ),
+
       GoRoute(
         path: '/investments',
         name: 'investments',

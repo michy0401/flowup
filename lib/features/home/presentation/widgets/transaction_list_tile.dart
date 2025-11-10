@@ -45,14 +45,13 @@ class TransactionListTile extends StatelessWidget {
         ),
         // --- 2. ACTUALIZA EL ONTAP ---
         onTap: () {
-          // (Usamos un ID de prueba por ahora)
-          // Cuando tengamos datos reales, usaremos el ID de la transacción
-          final fakeTransactionId = '123'; 
+          final fakeTransactionId = '123'; // (ID de prueba)
 
           if (isExpense) {
-            // context.push('/expenses/$fakeTransactionId');
+            // NAVEGA AL DETALLE DEL GASTO
+            context.push('/expenses/$fakeTransactionId'); // <-- LÍNEA ACTUALIZADA
           } else {
-            // Navega a la pantalla de detalle de ingreso
+            // Navega al detalle del ingreso
             context.push('/income/$fakeTransactionId');
           }
         },
